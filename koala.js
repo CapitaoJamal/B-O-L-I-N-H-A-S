@@ -10,10 +10,15 @@ var minXimg;
 var minYimg;
 var maxXimg;
 var maxYimg;
+var fundo;
 var zise = 500;
 
+function preload(){
+    img= loadImage('patrocinio.logo.jpg');
+}
+
 function setup(){
-    img = loadImage('Estoni19.jpg');
+    fundo = color(255);
     createCanvas(innerWidth,innerHeight);
     noStroke();
     
@@ -25,11 +30,13 @@ function setup(){
     minXimg = 0;
     maxXimg = img.width;
     minYimg = 0;
-    maxXimg = img.height;   
+    maxYimg = img.height;   
     
     bolinha={
         x:width/2,
         y:height/2,
+        fx: this.x,
+        fy: this.y,
         w:zise,
         h:zise,
         min:2,
@@ -40,6 +47,11 @@ function setup(){
             y =map(this.y, minY, maxY, minYimg,maxYimg);
             this.cor = color(img.get(x,y));
         },
+        
+        animar:function() {
+            this.x 
+        
+    },
         
         split: function(){
             w = this.w/2;
@@ -55,16 +67,18 @@ function setup(){
                 quatro.push(Object.create(bolinha));
                 quatro[i].w = w;
                 quatro[i].h = h;
+                quatro[i].x = this.x;
+                quatro[i].y = this.y;
             }
 
-            quatro[0].x=this.x-w/2;
-            quatro[0].y=this.y-h/2;
-            quatro[1].x=this.x+w/2;
-            quatro[1].y=this.y-h/2;
-            quatro[2].x=this.x-w/2;
-            quatro[2].y=this.y+h/2;
-            quatro[3].x=this.x+w/2;
-            quatro[3].y=this.y+h/2; 
+            quatro[0].fx=this.x-w/2;
+            quatro[0].fy=this.y-h/2;
+            quatro[1].fx=this.x+w/2;
+            quatro[1].fy=this.y-h/2;
+            quatro[2].fx=this.x-w/2;
+            quatro[2].fy=this.y+h/2;
+            quatro[3].fx=this.x+w/2;
+            quatro[3].fy=this.y+h/2; 
             quatro[0].getColor();
             quatro[1].getColor();
             quatro[2].getColor();
@@ -76,14 +90,21 @@ function setup(){
         
     }
     
+    bolinha.getColor();
     bolinhas.push(bolinha);
   
 }
 function draw(){
-    background(255)
+    background(fundo)
     for(let i=bolinhas.length-1;i>=0;i--){
-        b=bolinhas[i];  
+        let b=bolinhas[i];  
         fill(b.cor);
+        if (similiarColor(b.cor, fundo)){
+            stroke(200);
+            strokeWeight(1);
+        }else{
+            noStroke();
+        }
         ellipse(b.x,b.y,b.w,b.h);
         
          if(dist(mouseXant,mouseY,b.x,b.y) > b.w/2){
@@ -105,6 +126,16 @@ function draw(){
 function dist(ax,ay,bx,by){
     dist = Math.sqrt((ax-bx)^2 + (ay-by)^2);
     return dist;
-    
-    
+     
+}
+
+function similiarColor(cor_a, cor_b){
+    let a = cor_a.levels
+    let b = cor_b.levels
+    for(let i = 0; i < 4;i++){
+        if(abs(a[i]-b[i]) > 20){
+            return false;
+        }
+    }
+    return true;
 }
